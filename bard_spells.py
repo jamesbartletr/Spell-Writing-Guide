@@ -40,10 +40,10 @@ class scale():
         return f
 
 
-# Function to create a set of frequencies (chords) based on various attributes
+# Function to create a set of frequencies (chords) based on various Attributes
 def chords_maker(rang, level, area, dtype, school, scale_steps="2212221", f0=440):
     """
-    Generates musical chord frequencies based on given attributes.
+    Generates musical chord frequencies based on given Attributes.
 
     Args:
         rang (str): Range attribute (e.g., 'point (150 feet)').
@@ -58,11 +58,11 @@ def chords_maker(rang, level, area, dtype, school, scale_steps="2212221", f0=440
         list: A list of frequencies (in Hz) representing the chord.
     """
     # Load attribute lists from external files
-    ranges = load_attribute("attributes/range.txt")
-    levels = load_attribute("attributes/levels.txt")
-    area_types = load_attribute("attributes/area_types.txt")
-    dtypes = load_attribute("attributes/damage_types.txt")
-    schools = load_attribute("attributes/school.txt")
+    ranges = load_attribute("Attributes/range.txt")
+    levels = load_attribute("Attributes/levels.txt")
+    area_types = load_attribute("Attributes/area_types.txt")
+    dtypes = load_attribute("Attributes/damage_types.txt")
+    schools = load_attribute("Attributes/school.txt")
 
     # Calculate the length of each attribute list
     lens = [len(ranges), len(levels), len(area_types), len(dtypes), len(schools)]
@@ -70,7 +70,7 @@ def chords_maker(rang, level, area, dtype, school, scale_steps="2212221", f0=440
     # Reference scale for mapping attribute indices to frequencies
     reference_scale = scale(scale_steps, max_L=max(lens), f0=f0)
 
-    # Find indices of the provided attributes in their respective lists
+    # Find indices of the provided Attributes in their respective lists
     i_range = ranges.index(rang)
     i_levels = levels.index(level)
     i_area = area_types.index(area)
@@ -88,7 +88,7 @@ def chords_maker(rang, level, area, dtype, school, scale_steps="2212221", f0=440
             else:
                 seen.append(a)
 
-    # Generate frequencies for the attributes
+    # Generate frequencies for the Attributes
     f = []
     for i in attr:
         f.append(reference_scale.get_note(i))
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     A4 = 440  # Standard A4 frequency
     Middle_C = 264  # Frequency of middle C
 
-    # Generate chords based on the given attributes
+    # Generate chords based on the given Attributes
     f = chords_maker(
         'point (150 feet)', '3', "sphere", "fire", "evocation",
         scale_steps=blues, f0=Middle_C

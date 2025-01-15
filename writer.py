@@ -1,5 +1,5 @@
 
-# writer.py - A script for generating and visualizing binary patterns with specific attributes.
+# writer.py - A script for generating and visualizing binary patterns with specific Attributes.
 # This script provides functionality for creating unique non-repeating binary patterns
 # and using those patterns to draw customizable visualizations.
 import bases
@@ -148,7 +148,7 @@ def draw_multiple_inputs(in_array,
     plt.axis('scaled')
 def load_attribute(fname):
     """
-    Reads attributes from a specified text file.
+    Reads Attributes from a specified text file.
     Removes newlines and converts the text to lowercase.
     """
     with open(fname,"r") as f:
@@ -163,7 +163,7 @@ def draw_spell(level,rang,area,dtype,school,title = None,
                 base_fn = bases.polygon,base_kwargs = [],
                 shape_fn = line_shapes.straight,shape_kwargs = [],
                 colors = [],legend_loc = "upper left",breakdown = False):
-#Visualizes a spell based on user-defined values and input attributes loaded via text files.
+#Visualizes a spell based on user-defined values and input Attributes loaded via text files.
     #draws a spell given certain values by comparing it to input txt
     ranges = load_attribute("Attributes/range.txt")
     levels = load_attribute("Attributes/levels.txt")
@@ -351,7 +351,7 @@ if __name__ == "__main__":
     parser.add_argument("--savename",help = "savename of file")
     parser.add_argument("--legend",help = "bool to print legend or not (0 = False,1 = True)")
     parser.add_argument("--breakdown",help = "bool to control whether to breakdown the lines with colour")
-    parser.add_argument("-ah", "--arg_help",help = "Prints the available options for the chosen attributes",action=argparse.BooleanOptionalAction)
+    parser.add_argument("-ah", "--arg_help",help = "Prints the available options for the chosen Attributes",action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
 
     if args.arg_help:
@@ -422,3 +422,21 @@ if __name__ == "__main__":
                 breakdown = breakdown,savename = savename)
         plt.clf()
 
+def generate_image(prompt, output_path):
+    """
+    Generate an image based on the given text prompt.
+
+    Args:
+        prompt (str): The input text prompt.
+        output_path (str): Where to save the generated image.
+
+    Example:
+        generate_image("sunset over mountains", "static/generated/sunset.png")
+    """
+    from PIL import Image, ImageDraw  # Placeholder for actual image generation logic
+
+    # Example placeholder: Generate an empty image with the prompt as text
+    image = Image.new('RGB', (500, 300), color='white')
+    draw = ImageDraw.Draw(image)
+    draw.text((10, 10), prompt, fill='black')
+    image.save(output_path)
