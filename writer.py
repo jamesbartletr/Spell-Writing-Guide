@@ -83,19 +83,19 @@ def generate_binary_strings(bit_count):
 
 #-------Functions for Visualizations and Drawing Runes---------
 
-def decode_shape(in_array,k=1,point_color = 'k',on_color = 'darkred',off_color = "grey",
-                 """
-                 Decodes and visualizes a single binary array as a graphical shape.
-                 Args:
-                     in_array (list[int]): Binary input array that needs visualization.
-                     k (int): Rotation for connecting points in the shape.
-                     point_color (str): Color for the points of the base.
-                     on_color (str): Color for the active connections.
-                     off_color (str): Color for inactive connections.
-                     Other arguments control plot behavior and aesthetic options.
-                 """
-                 label = None,base_fn = bases.polygon,base_kwargs = [],
-                 shape_fn = line_shapes.straight,shape_kwargs = [],
+def decode_shape(in_array, k=1, point_color='k', on_color='darkred', off_color="grey",
+                 label=None, plot_base=True, base_fn=bases.polygon, base_kwargs=[],
+                 shape_fn=line_shapes.straight, shape_kwargs=[]):
+    """
+    Decodes and visualizes a single binary array as a graphical shape.
+    Args:
+        in_array (list[int]): Binary input array that needs visualization.
+        k (int): Rotation for connecting points in the shape.
+        point_color (str): Color for the points of the base.
+        on_color (str): Color for the active connections.
+        off_color (str): Color for inactive connections.
+        Other arguments control plot behavior and aesthetic options.
+    """
     n = len(in_array)  # Number of points in the binary array.
     x,y = base_fn(n,*base_kwargs)  # Base shape generated using the base function.
     n = len(in_array)
