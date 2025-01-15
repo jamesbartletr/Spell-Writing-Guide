@@ -11,8 +11,8 @@ Blank
 500 miles
 60 feet
 90 feet
-Self
-Sight
-Special
-Touch
-Unlimited
+self
+sight
+special
+touch
+unlimited

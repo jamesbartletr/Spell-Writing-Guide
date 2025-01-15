@@ -3,19 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Generator</title>
+    <title>Spell Generator</title>
 </head>
 <body>
-    <h1>Generate an Image from Prompt</h1>
+    <h1>Generate a Spell Visualization</h1>
+
     <form action="/generate" method="post">
-        <label for="prompt">Prompt:</label>
-        <input type="text" name="prompt" id="prompt" required>
+        <!-- Spell Level -->
+        <label for="level">Level:</label>
+        <select name="level" id="level" required>
+            {% for level in levels %}
+                <option value="{{ level }}">{{ level }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- Spell Range -->
+        <label for="range">Range:</label>
+        <select name="range" id="range" required>
+            {% for value in ranges %}
+                <option value="{{ value }}">{{ value }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- Area Type -->
+        <label for="area">Area Type:</label>
+        <select name="area" id="area" required>
+            {% for area in area_types %}
+                <option value="{{ area }}">{{ area }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- Damage Type -->
+        <label for="dtype">Damage Type:</label>
+        <select name="dtype" id="dtype" required>
+            {% for dtype in damage_types %}
+                <option value="{{ dtype }}">{{ dtype }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- School of Magic -->
+        <label for="school">School:</label>
+        <select name="school" id="school" required>
+            {% for school in schools %}
+                <option value="{{ school }}">{{ school }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- Submit Button -->
         <button type="submit">Generate</button>
     </form>
 
+    <!-- Display Generated Image -->
     {% if generated_image %}
-        <h2>Generated Image:</h2>
-        <img src="{{ generated_image }}" alt="Generated Image">
+        <h2>Generated Spell Visualization:</h2>
+        <img src="{{ generated_image }}" alt="Generated Spell Image">
     {% endif %}
 </body>
 </html>
