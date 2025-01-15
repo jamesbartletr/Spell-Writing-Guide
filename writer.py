@@ -1,4 +1,7 @@
 
+# writer.py - A script for generating and visualizing binary patterns with specific attributes.
+# This script provides functionality for creating unique non-repeating binary patterns
+# and using those patterns to draw customizable visualizations.
 import bases
 import line_shapes
 import numpy as np
@@ -6,35 +9,52 @@ import matplotlib.pyplot as plt
 import os
 from tqdm.auto import tqdm
 
-cmap = plt.get_cmap('viridis')
+cmap = plt.get_cmap('viridis')  # Color map used for visual differentiation in visualizations.
 #---------Functions for creating unique binary numbers------
 def cycle_list(l,loops = 1):
+    """
+    Cyclically rotates a list `l` by one position for `loops` number of times.
+    This is used to evaluate cyclic equivalencies of binary patterns.
+    """
     n = len(l)
     for t in range(loops):
         l = [l[(i+1) % n] for i in range(n)]
     return(l)
 
 def generate_unique_combinations(L):
+    """
+    Generates unique, non-repeating binary combinations of length `L`.
+    The algorithm ensures cyclic equivalency is tested, filtering duplicates.
+    Args:
+        L (int): The length of binary patterns to generate.
+    Returns:
+        List[List[int]]: A list of unique binary combinations.
+    """
     combinations = generate_binary_strings(L)
-    non_repeating = [combinations[0]]
-    for i in tqdm(range(len(combinations)),desc = "Genearting Unique Binary Numbers"):
+    non_repeating = [combinations[0]]  # A list to store only unique patterns.
+
+    for i in tqdm(range(len(combinations)),desc = "Generating Unique Binary Combinations"):
         ref = list(combinations[i])
         N = len(ref)
         test = 0
         for j in range(len(non_repeating)):
             for n in range(N):
-                
-                if cycle_list(list(non_repeating[j]),loops = n+1) == ref:
+
+                if cycle_list(list(non_repeating[j]),loops = n+1) == ref:  # Check cyclic equivalency.
                     test += 1
-        
+
         if test == 0:
             non_repeating.append(combinations[i])
-            
+
     for i in np.arange(len(non_repeating)):
         non_repeating[i] = [int(s) for s in list(non_repeating[i])]
     return(non_repeating)
 
 def genbin(n, bs = ''):
+    """
+    Recursive helper function to generate all binary strings of length `n`.
+    Each string is appended to the global variable `binary_strings`.
+    """
     if n-1:
         genbin(n-1, bs + '0')
         genbin(n-1, bs + '1')
@@ -42,6 +62,13 @@ def genbin(n, bs = ''):
         print('1' + bs)
 
 def generate_binary_strings(bit_count):
+    """
+    Generates all possible binary strings for a specified bit count.
+    Args:
+        bit_count (int): Number of bits in the binary strings.
+    Returns:
+        List[str]: All possible binary strings of the given bit count.
+    """
     binary_strings = []
     def genbin(n, bs=''):
         if len(bs) == n:
@@ -54,38 +81,49 @@ def generate_binary_strings(bit_count):
     genbin(bit_count)
     return binary_strings
 
-#-------Functions for drawing runes
+#-------Functions for Visualizations and Drawing Runes---------
+
 def decode_shape(in_array,k=1,point_color = 'k',on_color = 'darkred',off_color = "grey",
+                 """
+                 Decodes and visualizes a single binary array as a graphical shape.
+                 Args:
+                     in_array (list[int]): Binary input array that needs visualization.
+                     k (int): Rotation for connecting points in the shape.
+                     point_color (str): Color for the points of the base.
+                     on_color (str): Color for the active connections.
+                     off_color (str): Color for inactive connections.
+                     Other arguments control plot behavior and aesthetic options.
+                 """
                  label = None,base_fn = bases.polygon,base_kwargs = [],
                  shape_fn = line_shapes.straight,shape_kwargs = [],
-                 plot_base = False):
-    #decodes a single array into a given base, use plot_base = True if you are plotting it on its own
+    n = len(in_array)  # Number of points in the binary array.
+    x,y = base_fn(n,*base_kwargs)  # Base shape generated using the base function.
     n = len(in_array)
     x,y = base_fn(n,*base_kwargs)
     if plot_base == True:
         plt.scatter(x[1:],y[1:],s = 70,facecolors = 'none', edgecolors = point_color)
         plt.scatter(x[0],y[0],s = 70,facecolors = point_color, edgecolors = point_color)
         plt.axis('off')
-        plt.axis('scaled')
+        plt.axis('scaled')  # Ensure the overall plot is displayed in proper proportions.
     for i,elem in enumerate(in_array):
         P = [x[i],y[i]]
         Q = [x[(i+k)%n],y[(i+k)%n]]
         X,Y = shape_fn(P,Q,*shape_kwargs)
-        if elem == 0:
+        if elem == 0:  # Draw inactive connections.
             plt.plot(X,Y,color = off_color,ls = "--",linewidth=0.25)
         elif elem == 1:
             plt.plot(X,Y,color = on_color,ls = "-",label = label if i == np.where(in_array == 1)[0][0] else None,
                      linewidth = 2)
         else:
             print(f'elem {elem} at index {i} is not valid, input being skipped')
-    
 
+    return  # Return nothing but renders visualization via matplotlib.
 def draw_multiple_inputs(in_array,
                          base_fn = bases.polygon,base_kwargs = [],
                          shape_fn = line_shapes.straight,shape_kwargs = [],
                          point_color = 'k',labels = [],legend = False,colors = [],
                          legend_loc = "upper left"):
-    
+    #Visualizes multiple binary input arrays on a single shared base for comparison.
     #draws multiple inputs on a single base
     if isinstance(colors,list) and len(colors) == 0:
         colors = [point_color]*in_array.shape[0]
@@ -93,9 +131,9 @@ def draw_multiple_inputs(in_array,
         colors = [colors]*in_array.shape[0]
     n = in_array.shape[1]
     x,y = base_fn(n,*base_kwargs)
-    plt.scatter(x[1:],y[1:],s = 70,facecolors = 'none', edgecolors = point_color)
+    plt.scatter(x[1:],y[1:],s=70,facecolors='none',edgecolors=point_color)  # Root visualized.
     plt.scatter(x[0],y[0],s = 70,facecolors = point_color, edgecolors = point_color)
-    
+
     if len(labels) != in_array.shape[0]:
         labels = [None]*in_array.shape[0]
 
@@ -109,6 +147,10 @@ def draw_multiple_inputs(in_array,
     plt.axis('off')
     plt.axis('scaled')
 def load_attribute(fname):
+    """
+    Reads attributes from a specified text file.
+    Removes newlines and converts the text to lowercase.
+    """
     with open(fname,"r") as f:
         data = f.readlines()
         f.close()
@@ -121,7 +163,7 @@ def draw_spell(level,rang,area,dtype,school,title = None,
                 base_fn = bases.polygon,base_kwargs = [],
                 shape_fn = line_shapes.straight,shape_kwargs = [],
                 colors = [],legend_loc = "upper left",breakdown = False):
-    
+#Visualizes a spell based on user-defined values and input attributes loaded via text files.
     #draws a spell given certain values by comparing it to input txt
     ranges = load_attribute("Attributes/range.txt")
     levels = load_attribute("Attributes/levels.txt")
@@ -140,10 +182,10 @@ def draw_spell(level,rang,area,dtype,school,title = None,
               f"range: {rang}",
               f"area_type: {area}"]
     N = 2*len(attributes)+1
-    
+
     if len(colors) == 0 and breakdown == True:
         colors = [cmap(i/len(attributes)) for i in range(len(attributes))]
-    if not os.path.isdir("Uniques/"):
+    if not os.path.isdir("Uniques/"):  # Directory to save generated unique binary combinations.
         os.makedirs("Uniques/")
     if os.path.isfile(f'Uniques/{N}.npy'):
         non_repeating = np.load(f'Uniques/{N}.npy')
@@ -157,9 +199,9 @@ def draw_spell(level,rang,area,dtype,school,title = None,
                          base_fn = base_fn,base_kwargs = base_kwargs,
                          shape_fn = shape_fn,shape_kwargs = shape_kwargs,
                          colors = colors,legend_loc = legend_loc)
-    
+
     plt.title(title,fontsize = "80")
-    
+
     if savename is not None:
         plt.savefig(savename,transparent = False, bbox_inches='tight')
         plt.clf()
@@ -172,7 +214,7 @@ def draw_spell_2(level,rang,area,dtype,school,duration,concentration,ritual,titl
                 shape_fn = line_shapes.straight,shape_kwargs = [],
                 colors = [],legend_loc = "upper left",breakdown = False,
                 base_dir = ""):
-    
+
     #draws a spell given certain values by comparing it to input txt
     ranges = load_attribute(base_dir +"Attributes/range.txt")
     levels = load_attribute(base_dir +"Attributes/levels.txt")
@@ -194,7 +236,7 @@ def draw_spell_2(level,rang,area,dtype,school,duration,concentration,ritual,titl
               f"area_type: {area}",
               f'duration: {duration}']
     N = 2*len(attributes)+1
-    
+
     if len(colors) == 0 and breakdown == True:
         colors = [cmap(i/len(attributes)) for i in range(len(attributes))]
     if not os.path.isdir(base_dir +"Uniques/"):
@@ -206,19 +248,19 @@ def draw_spell_2(level,rang,area,dtype,school,duration,concentration,ritual,titl
         non_repeating = np.array(non_repeating)
         np.save(base_dir +f"Uniques/{N}.npy",non_repeating)
     input_array = np.array([non_repeating[i] for i in attributes])#note +1 s.t. 0th option is always open for empty input
-    
+
     draw_multiple_inputs(input_array,labels = labels,legend = legend,
                          base_fn = base_fn,base_kwargs = base_kwargs,
                          shape_fn = shape_fn,shape_kwargs = shape_kwargs,
                          colors = colors,legend_loc = legend_loc)
-    
+
     if concentration:
         plt.plot(0,0,"",markersize = 10,marker = ".",color = colors)
     if ritual:
-        
+
         plt.plot(0,0,"",markersize = 10,marker = ".",color= colors)
         plt.plot(0,0,"",markersize = 20,marker = "o",color=colors,mfc='none',linewidth = 10)
-    
+
     plt.title(title)
     if savename is not None:
         plt.savefig(savename,transparent = True, bbox_inches='tight')
@@ -226,7 +268,7 @@ def draw_spell_2(level,rang,area,dtype,school,duration,concentration,ritual,titl
     else:
         plt.show()
 
-#to run if the file is called
+#---------Main Callable Functions and Command-line Entry-------#
 def draw_attribute(level = None,rang = None, area = None,
                    savename = "output.png",legend = False,
                     dtype = None, school = None,duration = None,
@@ -266,9 +308,9 @@ def draw_attribute(level = None,rang = None, area = None,
             f"range: {rang}",
             f"area_type: {area}",
             f"duration: {duration}"]
-    
+
     N = 2*len(attributes)+1
-    
+
     if isinstance(colors,list) and len(colors) == 0 and breakdown == True:
         colors = [cmap(i/len(attributes)) for i in range(len(attributes))]
     if not os.path.isdir("Uniques/"):
@@ -279,7 +321,7 @@ def draw_attribute(level = None,rang = None, area = None,
         non_repeating = generate_unique_combinations(N)
         non_repeating = np.array(non_repeating)
         np.save(f"Uniques/{N}.npy",non_repeating)
-    
+
     input_array = []
     for j,i in enumerate(attributes):
         input_array.append(non_repeating[i])
@@ -295,7 +337,7 @@ def draw_attribute(level = None,rang = None, area = None,
         plt.clf()
     else:
         plt.show()
-    
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -354,17 +396,17 @@ if __name__ == "__main__":
             level = "3"
         else:
             level = args.level
-        
+
         if not args.range:
             rang = "150 feet"
         else:
             rang = args.range
-        
+
         if not args.area:
             area = "sphere (30)"
         else:
             area = args.area
-        
+
         if not args.dtype:
             dtype = "fire"
         else:
@@ -379,5 +421,4 @@ if __name__ == "__main__":
                 base_fn = bases.polygon,shape_fn = line_shapes.straight,
                 breakdown = breakdown,savename = savename)
         plt.clf()
-        
-    
+
